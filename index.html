@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduQuiz Pro | Online Quiz & Certification System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Background glowing decorative spheres styled in CSS -->
+
+    <div class="app-container">
+        
+        <!-- 1. AUTHENTICATION PANEL -->
+        <div id="auth-panel" class="glass-panel active">
+            <div style="text-align: center; margin-bottom: 35px;">
+                <h1 id="auth-title">EduQuiz Pro</h1>
+                <p id="auth-subtitle">Sign in to start your certification journey</p>
+            </div>
+            
+            <form id="auth-form" class="auth-form" onsubmit="handleAuthSubmit(event)">
+                <!-- Login specific input fields -->
+                <div class="input-group">
+                    <input type="text" id="auth-username" required placeholder=" " autocomplete="username">
+                    <label for="auth-username">Username</label>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="auth-password" required placeholder=" " autocomplete="current-password">
+                    <label for="auth-password">Password</label>
+                </div>
+
+                <div class="input-group" id="reg-name-group" style="display: none;">
+                    <input type="text" id="auth-fullname" placeholder=" ">
+                    <label for="auth-fullname">Full Name (for certificate)</label>
+                </div>
+                
+                <button type="submit" id="auth-btn" class="btn btn-primary">
+                    <span>Sign In</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </form>
+            
+            <div class="auth-switch">
+                <span id="auth-switch-text">Don't have an account?</span> 
+                <a href="#" id="auth-switch-link" onclick="toggleAuthMode(event)">Register here</a>
+            </div>
+        </div>
+
+        <!-- 2. DASHBOARD PANEL -->
+        <div id="dashboard-panel" class="glass-panel">
+            <div class="dashboard-header">
+                <div class="user-profile">
+                    <div id="user-avatar" class="user-avatar">JD</div>
+                    <div class="user-details">
+                        <h3 id="user-display-name">John Doe</h3>
+                        <span>Student Profile</span>
+                    </div>
+                </div>
+                <button onclick="handleLogout()" class="btn btn-secondary" style="padding: 10px 18px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>Sign Out</span>
+                </button>
+            </div>
+
+            <div>
+                <h2>Choose a Quiz Category</h2>
+                <p>Select a topic to test your knowledge. You will have 15 minutes to complete 15 questions. Score 60% or higher to earn a certificate.</p>
+                
+                <div class="category-grid">
+                    <!-- Web Development -->
+                    <div class="category-card" onclick="startQuizPreparation('webdev')">
+                        <span class="category-icon">💻</span>
+                        <h3>Web Development</h3>
+                        <p>HTML, CSS, JavaScript, ES6+, DOM manipulation, and basic web fundamentals.</p>
+                        <div class="category-meta">
+                            <span>15 Questions</span>
+                            <span>15 Minutes</span>
+                        </div>
+                    </div>
+
+                    <!-- General Science -->
+                    <div class="category-card" onclick="startQuizPreparation('science')">
+                        <span class="category-icon">🔬</span>
+                        <h3>General Science</h3>
+                        <p>Physics, Chemistry, Biology, Space Exploration, and scientific concepts.</p>
+                        <div class="category-meta">
+                            <span>15 Questions</span>
+                            <span>15 Minutes</span>
+                        </div>
+                    </div>
+
+                    <!-- Cyber Security -->
+                    <div class="category-card" onclick="startQuizPreparation('cyber')">
+                        <span class="category-icon">🛡️</span>
+                        <h3>Cyber Security</h3>
+                        <p>Network security, cryptography, malware types, and secure web practices.</p>
+                        <div class="category-meta">
+                            <span>15 Questions</span>
+                            <span>15 Minutes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Attempt History -->
+                <div class="history-section">
+                    <h2>Your Quiz History & Certificates</h2>
+                    <div id="history-list-empty" style="text-align: center; padding: 40px 0; color: var(--text-muted);">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 15px; opacity: 0.5;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <p>No attempts recorded yet. Choose a category above to take your first quiz!</p>
+                    </div>
+                    <div id="history-list" class="history-list" style="display: none;">
+                        <!-- Generated Dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. QUIZ PANEL -->
+        <div id="quiz-panel" class="glass-panel">
+            <div class="quiz-header">
+                <div class="quiz-title-area">
+                    <h2 id="quiz-category-title" style="margin-bottom: 0;">Web Development Quiz</h2>
+                    <span id="quiz-progress-text" style="color: var(--text-muted); font-size: 0.9rem;">Question 1 of 15</span>
+                </div>
+                <div id="quiz-timer" class="quiz-timer-container">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span id="timer-clock" class="quiz-timer-clock">15:00</span>
+                </div>
+            </div>
+
+            <div class="quiz-progress-wrapper">
+                <div id="quiz-progress-bar" class="quiz-progress-bar"></div>
+            </div>
+
+            <div class="quiz-body">
+                <!-- Question Card -->
+                <div class="quiz-question-card">
+                    <div id="question-number" class="question-num">Question 01</div>
+                    <div id="question-text" class="question-text">Loading question...</div>
+                    
+                    <div id="options-container" class="options-container">
+                        <!-- Loaded dynamically -->
+                    </div>
+
+                    <div class="quiz-controls">
+                        <div class="quiz-controls-left">
+                            <button id="btn-prev" onclick="navigateQuestion(-1)" class="btn btn-secondary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                <span>Previous</span>
+                            </button>
+                            <button id="btn-next" onclick="navigateQuestion(1)" class="btn btn-secondary">
+                                <span>Next</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
+                        </div>
+                        <button id="btn-flag" onclick="toggleFlagCurrentQuestion()" class="btn btn-secondary" style="border-color: rgba(253, 203, 110, 0.3); color: var(--warning);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span id="flag-btn-text">Flag for Review</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question Navigation Sidebar -->
+                <div class="nav-panel">
+                    <div class="nav-panel-title">Quiz Navigation</div>
+                    <div id="nav-grid" class="nav-grid">
+                        <!-- 15 buttons generated dynamically -->
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="border: 2px solid var(--secondary);"></div>
+                            <span>Current</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--primary-glow); border: 1px solid var(--primary);"></div>
+                            <span>Answered</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(253, 203, 110, 0.15); border: 1px solid var(--warning);"></div>
+                            <span>Flagged</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);"></div>
+                            <span>Unanswered</span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="promptSubmitQuiz()" class="btn btn-primary" style="width: 100%; margin-top: 25px; box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <span>Submit Quiz</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. RESULTS PANEL -->
+        <div id="results-panel" class="glass-panel">
+            <div class="results-card">
+                <div class="results-graphic">
+                    <svg class="results-svg-ring" width="140" height="140">
+                        <circle cx="70" cy="70" r="60" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent"/>
+                        <circle id="results-progress-ring" cx="70" cy="70" r="60" stroke="var(--primary)" stroke-width="8" fill="transparent"
+                                stroke-dasharray="377" stroke-dashoffset="377" stroke-linecap="round" style="transition: stroke-dashoffset 1s ease-out;"/>
+                    </svg>
+                    <span id="results-score-percent" class="results-percentage">0%</span>
+                </div>
+                
+                <h1 id="results-status-title" class="results-status pass">CONGRATULATIONS!</h1>
+                <p id="results-message">You have successfully cleared the quiz assessment and qualified for your certification.</p>
+                
+                <div class="results-stats-grid">
+                    <div class="stat-item">
+                        <div id="stat-score" class="stat-val">12/15</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                    <div class="stat-item">
+                        <div id="stat-accuracy" class="stat-val">80%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-item">
+                        <div id="stat-time" class="stat-val">04:32</div>
+                        <div class="stat-label">Time Taken</div>
+                    </div>
+                </div>
+
+                <div class="results-actions">
+                    <button id="btn-view-cert" onclick="showCertificateModal()" class="btn btn-accent">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <span>Claim Certificate</span>
+                    </button>
+                    <button id="btn-retry" onclick="retryQuiz()" class="btn btn-secondary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                        <span>Try Again</span>
+                    </button>
+                    <button onclick="goToDashboard()" class="btn btn-secondary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>Dashboard</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 5. CERTIFICATE OVERLAY/MODAL -->
+    <div id="certificate-modal" class="certificate-modal">
+        <div class="certificate-modal-content">
+            <button class="certificate-close-btn" onclick="hideCertificateModal()">&times;</button>
+            
+            <div class="certificate-canvas" id="certificate-canvas">
+                <div class="certificate-border-outer">
+                    <div class="certificate-border-inner">
+                        <div class="certificate-watermark"></div>
+                        
+                        <div class="cert-header">
+                            <div class="cert-title-top">Certificate of Completion</div>
+                            <div class="cert-main-title">EduQuiz Certification Program</div>
+                        </div>
+
+                        <div>
+                            <div class="cert-subtitle">This document proudly certifies that</div>
+                            <div id="cert-student-name" class="cert-recipient">Johnathan Doe</div>
+                            <div class="cert-text">
+                                has successfully met all academic standards, completed the rigorous evaluation, and demonstrated proficiency in the field of <span id="cert-course-name" class="cert-course">Web Development</span> with an outstanding score of <span id="cert-score-val" style="font-weight: 700;">87%</span>.
+                            </div>
+                        </div>
+
+                        <div class="cert-footer">
+                            <div class="cert-verification">
+                                <div>Date Issued: <strong id="cert-date">June 5, 2026</strong></div>
+                                <div style="margin-top: 5px;">Verification ID: <span id="cert-id" class="cert-verification-id">EQ-9284-F18B</span></div>
+                            </div>
+                            
+                            <div class="cert-seal-container">
+                                <div class="cert-seal"></div>
+                            </div>
+
+                            <div class="cert-sign-col">
+                                <div class="cert-signature">Sophia Harrison</div>
+                                <div class="cert-sign-line"></div>
+                                <div class="cert-sign-label">Chief Academic Officer</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cert-modal-actions">
+                <button onclick="printCertificate()" class="btn btn-accent">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <span>Print or Save PDF</span>
+                </button>
+                <button onclick="hideCertificateModal()" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. CONFIRM SUBMIT MODAL -->
+    <div id="confirm-modal" class="modal-confirm">
+        <div class="confirm-card">
+            <h3>Submit Assessment?</h3>
+            <p id="confirm-modal-text">Are you sure you want to submit? You still have unanswered questions.</p>
+            <div class="confirm-actions">
+                <button onclick="submitQuizDirectly()" class="btn btn-primary">Yes, Submit</button>
+                <button onclick="closeConfirmModal()" class="btn btn-secondary">Keep Working</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
